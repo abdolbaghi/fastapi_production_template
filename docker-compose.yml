@@ -3,7 +3,7 @@ version: '3.7'
 services:
   app:
     container_name: app
-    image: app_image
+    image: app
     env_file:
       - .env
     build:
@@ -38,14 +38,26 @@ services:
       - '--requirepass myStrongPassword'
     ports:
       - 36379:6379
+  
+  app_milidb:
+    container_name: app_milidb
+    hostname: app_milidb
+    image:  getmeili/meilisearch:v1.7
+    volumes:
+      - app_meili_data:/meili_data
+    ports:
+      - "7700:7700"
+
 
 volumes:
   app_pg_data:
     driver: "local"
   app_pg_data_backups:
     driver: "local"
+  app_meili_data:
+    driver: "local"
 
-networks:
-  default:
-    external: true
-    name: app_main
+# networks:
+#   default:
+#     external: true
+#     name: app_main

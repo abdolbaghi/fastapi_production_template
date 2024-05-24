@@ -114,32 +114,35 @@ class MeiliSearchParameters:
         }
 
 class MeiliSearch:
-    def __init__(self, url, api_key=None):
+    def __init__(self, index_name, url=settings.MEILIDB_URL, api_key=settings.MEILIDB_KEY):
         self.url = url
         self.api_key = api_key
+        self.index_name = index_name
         self.headers = {'Content-Type': 'application/json'}
         if api_key:
             self.headers['X-Meili-Api-Key'] = api_key
-
-    def create_index(self, index_name):
-        endpoint = f"{self.url}/indexes"
+    @staticmethod
+    def create_index(index_name):
+        url=settings.MEILIDB_URL
+        headers = {'Content-Type': 'application/json','X-Meili-Api-Key':settings.MEILIDB_KEY}
+        endpoint = f"{url}/indexes"
         data = {'name': index_name}
-        response = requests.post(endpoint, json=data, headers=self.headers)
+        response = requests.post(endpoint, json=data, headers=headers)
         if response.status_code == 201:
             return response.json()
         else:
             raise Exception(f"Failed to create index: {response.text}")
 
-    def add_document(self, index_name, document):
-        endpoint = f"{self.url}/indexes/{index_name}/documents"
+    def add_document(self, document):
+        endpoint = f"{self.url}/indexes/{self.index_name}/documents"
         response = requests.post(endpoint, json=document, headers=self.headers)
         if response.status_code == 202:
             return response.json()
         else:
             raise Exception(f"Failed to add document: {response.text}")
 
-    def delete_document(self, index_name, document_id):
-        endpoint = f"{self.url}/indexes/{index_name}/documents/{document_id}"
+    def delete_document(self, document_id):
+        endpoint = f"{self.url}/indexes/{self.index_name}/documents/{document_id}"
         response = requests.delete(endpoint, headers=self.headers)
         if response.status_code == 204:
             return "Document deleted successfully."
@@ -148,16 +151,16 @@ class MeiliSearch:
         else:
             raise Exception(f"Failed to delete document: {response.text}")
 
-    def search(self, index_name, query):
-        endpoint = f"{self.url}/indexes/{index_name}/search"
+    def search(self, query):
+        endpoint = f"{self.url}/indexes/{self.index_name}/search"
         params = {'q': query}
         response = requests.get(endpoint, params=params, headers=self.headers)
         if response.status_code == 200:
             return response.json()
         else:
             raise Exception(f"Failed to search: {response.text}")
-    def adnvance_search(self, index_name, search_object:MeiliSearchParameters):
-        endpoint = f"{self.url}/indexes/{index_name}/search"
+    def adnvance_search(self, search_object:MeiliSearchParameters):
+        endpoint = f"{self.url}/indexes/{self.index_name}/search"
         response = requests.get(endpoint, params=search_object.to_dict(), headers=self.headers)
         if response.status_code == 200:
             return response.json()

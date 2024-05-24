@@ -41,7 +41,7 @@ services:
   
   app_milidb:
     container_name: app_milidb
-    hostname: app_milidb
+    hostname: meilidb
     image:  getmeili/meilisearch:v1.7
     volumes:
       - app_meili_data:/meili_data

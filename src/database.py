@@ -119,16 +119,17 @@ class MeiliSearch:
         self.api_key = api_key
         self.index_name = index_name
         self.headers = {'Content-Type': 'application/json'}
-        if api_key:
-            self.headers['X-Meili-Api-Key'] = api_key
+        self.headers['X-Meili-Api-Key'] = api_key
+        self.headers['Authorization'] = "Bearer "+api_key
     @staticmethod
-    def create_index(index_name):
+    def create_index(dict_data):
         url=settings.MEILIDB_URL
-        headers = {'Content-Type': 'application/json','X-Meili-Api-Key':settings.MEILIDB_KEY}
+        headers = {'Content-Type': 'application/json','X-Meili-Api-Key':settings.MEILIDB_KEY,'Authorization':"Bearer "+settings.MEILIDB_KEY}
         endpoint = f"{url}/indexes"
-        data = {'name': index_name}
-        response = requests.post(endpoint, json=data, headers=headers)
-        if response.status_code == 201:
+        if 'uid' not in dict_data:
+            raise Exception("meiliseach create index need 'uid' field ")
+        response = requests.post(endpoint, json=dict_data, headers=headers)
+        if response.status_code == 201 or response.status_code == 202:
             return response.json()
         else:
             raise Exception(f"Failed to create index: {response.text}")

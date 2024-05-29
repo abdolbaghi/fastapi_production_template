@@ -6,7 +6,7 @@ from src.foodlist.schemas import Food
 index = MeiliSearch('food_index')
 
 def create_food(food:Food):
-    index.add_document(food.serializable_dict())
+    return index.add_document(food.serializable_dict())
     
 def search_by_ingredient_in_meilisearch(ingredient: str) -> List[List[str]]:
     """

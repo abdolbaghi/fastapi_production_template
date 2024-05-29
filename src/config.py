@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import PostgresDsn, RedisDsn, model_validator
+from pydantic import PostgresDsn, RedisDsn, HttpUrl, model_validator
 from pydantic_settings import BaseSettings
 from src.constants import Environment
 
@@ -18,7 +18,8 @@ class Config(BaseSettings):
     CORS_ORIGINS: list[str]
     CORS_ORIGINS_REGEX: str | None = None
     CORS_HEADERS: list[str]
-
+    MEILIDB_URL:HttpUrl
+    MEILIDB_KEY:str
     APP_VERSION: str = "1"
 
     @model_validator(mode="after")
